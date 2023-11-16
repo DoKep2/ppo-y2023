@@ -3,27 +3,36 @@ package ru.quipy.projections
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import ru.quipy.api.ProjectAggregate
-import ru.quipy.api.TagCreatedEvent
-import ru.quipy.api.TaskCreatedEvent
+import ru.quipy.aggregates.AccountManagementAggregate
+import ru.quipy.api.*
 import ru.quipy.streams.annotation.AggregateSubscriber
 import ru.quipy.streams.annotation.SubscribeEvent
 
 @Service
 @AggregateSubscriber(
-    aggregateClass = ProjectAggregate::class, subscriberName = "demo-subs-stream"
+    aggregateClass = AccountManagementAggregate::class, subscriberName = "demo-subs-stream" // fixme
 )
 class AnnotationBasedProjectEventsSubscriber {
 
     val logger: Logger = LoggerFactory.getLogger(AnnotationBasedProjectEventsSubscriber::class.java)
 
     @SubscribeEvent
-    fun taskCreatedSubscriber(event: TaskCreatedEvent) {
-        logger.info("Task created: {}", event.taskName)
+    fun accountCreatedSubscriber(event: AccountCreatedEvent) {
+        logger.info("Account created")
     }
 
     @SubscribeEvent
-    fun tagCreatedSubscriber(event: TagCreatedEvent) {
-        logger.info("Tag created: {}", event.tagName)
+    fun accountUpdatedSubscriber(event: AccountUpdatedEvent) {
+        logger.info("Account updated")
+    }
+
+    @SubscribeEvent
+    fun accountClosedSubscriber(event: AccountClosedEvent) {
+        logger.info("Account closed")
+    }
+
+    @SubscribeEvent
+    fun TransferInitiatedSubscriber(event: TransferInitiatedEvent) {
+        logger.info("Transfer initiated")
     }
 }
