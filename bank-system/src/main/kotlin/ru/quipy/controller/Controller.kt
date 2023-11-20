@@ -19,7 +19,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/accounts")
-class ProjectController(
+class Controller(
     val accountEsService: EventSourcingService<UUID, AccountManagementAggregate, AccountAggregateState>
 ) {
 
