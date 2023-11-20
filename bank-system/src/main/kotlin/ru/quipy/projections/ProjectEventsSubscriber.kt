@@ -34,7 +34,7 @@ class ProjectEventsSubscriber {
             }
 
             `when`(TransferInitiatedEvent::class) { event ->
-                logger.info("Transfer initated") // fixme
+                logger.info("Transfer initiated") // fixme
             }
         }
     }

@@ -11,7 +11,7 @@ const val TRANSFER_INITIATED_EVENT = "TRANSFER_INITIATED_EVENT"
 const val ACCOUNT_CREATED_EVENT = "ACCOUNT_CREATED_EVENT"
 
 // API
-@DomainEvent(name = ACCOUNT_CREATED_EVENT)
+@DomainEvent(name = ACCOUNT_UPDATED_EVENT)
 class AccountUpdatedEvent(
     val accountId: UUID,
     val delta: Int,

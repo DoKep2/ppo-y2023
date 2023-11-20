@@ -9,28 +9,56 @@ import org.springframework.web.bind.annotation.RestController
 import ru.quipy.aggregates.AccountManagementAggregate
 import ru.quipy.core.EventSourcingService
 import ru.quipy.aggregates.AccountAggregateState
+import ru.quipy.api.AccountClosedEvent
+import ru.quipy.api.AccountCreatedEvent
+import ru.quipy.api.AccountUpdatedEvent
+import ru.quipy.commands.changeBalance
+import ru.quipy.commands.closeAccount
+import ru.quipy.commands.createAccount
 import java.util.*
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/accounts")
 class ProjectController(
-    val projectEsService: EventSourcingService<UUID, AccountManagementAggregate, AccountAggregateState>
+    val accountEsService: EventSourcingService<UUID, AccountManagementAggregate, AccountAggregateState>
 ) {
 
-//    @PostMapping("/{projectTitle}")
-//    fun createProject(@PathVariable projectTitle: String, @RequestParam creatorId: String) : ProjectCreatedEvent {
-//        return projectEsService.create { it.create(UUID.randomUUID(), projectTitle, creatorId) }
-//    }
-//
-//    @GetMapping("/{projectId}")
-//    fun getAccount(@PathVariable projectId: UUID) : ProjectAggregateState? {
-//        return projectEsService.getState(projectId)
-//    }
-//
-//    @PostMapping("/{projectId}/tasks/{taskName}")
-//    fun createTask(@PathVariable projectId: UUID, @PathVariable taskName: String) : TaskCreatedEvent {
-//        return projectEsService.update(projectId) {
-//            it.addTask(taskName)
-//        }
-//    }
+    @GetMapping("health")
+    fun healthCheck() : String {
+        return "Ok"
+    }
+
+    @PostMapping("")
+    fun createProject(@RequestParam userId: String, @RequestParam accountId: String) : AccountCreatedEvent {
+        return accountEsService.create { it.createAccount(UUID.fromString(userId), UUID.fromString(accountId))  }
+    }
+
+    @GetMapping("{id}")
+    fun getAccount(@PathVariable id: UUID) : AccountAggregateState? {
+        return accountEsService.getState(id)
+    }
+
+    @PostMapping("/close/{id}")
+    fun closeAccount(@PathVariable id: UUID) : AccountClosedEvent {
+        return accountEsService.update(id) {
+            it.closeAccount(id)
+        }
+    }
+
+    @PostMapping("{id}")
+    fun changeBalance(@PathVariable id: UUID, @RequestParam delta: Int) : AccountUpdatedEvent {
+        return accountEsService.update(id) {
+            it.changeBalance(id, delta)
+        }
+    }
+
+    @PostMapping("/transfer")
+    fun initiateTransfer(@RequestParam accountFromId: UUID, @RequestParam accountToId: UUID, @RequestParam delta: Int) : AccountUpdatedEvent {
+        accountEsService.update(accountFromId) {
+            it.changeBalance(accountFromId, -delta)
+        }
+        return accountEsService.update(accountToId) {
+            it.changeBalance(accountToId, delta)
+        }
+    }
 }
