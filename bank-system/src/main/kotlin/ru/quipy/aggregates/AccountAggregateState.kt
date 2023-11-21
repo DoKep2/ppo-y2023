@@ -5,7 +5,6 @@ import ru.quipy.core.annotations.StateTransitionFunc
 import ru.quipy.domain.AggregateState
 import java.util.*
 
-// Service's business logic
 class AccountAggregateState : AggregateState<UUID, AccountManagementAggregate> {
     private lateinit var accountId: UUID
     private lateinit var userId: UUID
@@ -17,7 +16,6 @@ class AccountAggregateState : AggregateState<UUID, AccountManagementAggregate> {
 
     override fun getId() = accountId
 
-    // State transition functions which is represented by the class member function
     @StateTransitionFunc
     fun accountCreatedApply(event: AccountCreatedEvent) {
         userId = event.userId

@@ -7,10 +7,6 @@ import ru.quipy.api.TransferInitiatedEvent
 import ru.quipy.aggregates.AccountAggregateState
 import java.util.*
 
-
-// Commands : takes something -> returns event
-// Here the commands are represented by extension functions, but also can be the class member functions
-
     fun AccountAggregateState.changeBalance(accountId: UUID, delta: Int): AccountUpdatedEvent {
     return AccountUpdatedEvent(
         accountId = accountId,

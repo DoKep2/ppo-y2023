@@ -38,7 +38,7 @@ class Controller(
         return accountEsService.getState(id)
     }
 
-    @PostMapping("/close/{id}")
+    @PostMapping("/{id}/close")
     fun closeAccount(@PathVariable id: UUID) : AccountClosedEvent {
         return accountEsService.update(id) {
             it.closeAccount(id)
