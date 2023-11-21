@@ -15,6 +15,7 @@ import ru.quipy.api.AccountUpdatedEvent
 import ru.quipy.commands.changeBalance
 import ru.quipy.commands.closeAccount
 import ru.quipy.commands.createAccount
+import ru.quipy.dto.AccountCreationDto
 import ru.quipy.dto.TransferDto
 import java.util.*
 
@@ -30,8 +31,8 @@ class Controller(
     }
 
     @PostMapping("")
-    fun createAccount(@RequestBody userId: String, @RequestBody accountId: String) : AccountCreatedEvent {
-        return accountEsService.create { it.createAccount(UUID.fromString(userId), UUID.fromString(accountId))  }
+    fun createAccount(@RequestBody request: AccountCreationDto) : AccountCreatedEvent {
+        return accountEsService.create { it.createAccount(UUID.fromString(request.userId), UUID.fromString(request.accountId))  }
     }
 
     @GetMapping("{id}")
