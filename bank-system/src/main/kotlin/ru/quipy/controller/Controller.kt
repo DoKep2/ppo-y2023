@@ -3,8 +3,8 @@ package ru.quipy.controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ru.quipy.aggregates.AccountManagementAggregate
 import ru.quipy.core.EventSourcingService
@@ -15,6 +15,7 @@ import ru.quipy.api.AccountUpdatedEvent
 import ru.quipy.commands.changeBalance
 import ru.quipy.commands.closeAccount
 import ru.quipy.commands.createAccount
+import ru.quipy.dto.TransferDto
 import java.util.*
 
 @RestController
@@ -29,7 +30,7 @@ class Controller(
     }
 
     @PostMapping("")
-    fun createProject(@RequestParam userId: String, @RequestParam accountId: String) : AccountCreatedEvent {
+    fun createAccount(@RequestBody userId: String, @RequestBody accountId: String) : AccountCreatedEvent {
         return accountEsService.create { it.createAccount(UUID.fromString(userId), UUID.fromString(accountId))  }
     }
 
@@ -46,19 +47,19 @@ class Controller(
     }
 
     @PostMapping("{id}")
-    fun changeBalance(@PathVariable id: UUID, @RequestParam delta: Int) : AccountUpdatedEvent {
+        fun changeBalance(@PathVariable id: UUID, @RequestBody delta: Int) : AccountUpdatedEvent {
         return accountEsService.update(id) {
             it.changeBalance(id, delta)
         }
     }
 
     @PostMapping("/transfer")
-    fun initiateTransfer(@RequestParam accountFromId: UUID, @RequestParam accountToId: UUID, @RequestParam delta: Int) : AccountUpdatedEvent {
-        accountEsService.update(accountFromId) {
-            it.changeBalance(accountFromId, -delta)
+    fun initiateTransfer(@RequestBody request: TransferDto) : AccountUpdatedEvent {
+        accountEsService.update(request.accountFromId) {
+            it.changeBalance(request.accountFromId, -request.delta)
         }
-        return accountEsService.update(accountToId) {
-            it.changeBalance(accountToId, delta)
+        return accountEsService.update(request.accountToId) {
+            it.changeBalance(request.accountToId, request.delta)
         }
     }
 }
